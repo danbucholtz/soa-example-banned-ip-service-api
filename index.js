@@ -27,14 +27,19 @@ var isIpAddressBanned = function(ipAddress){
 		deferred.resolve(false);
 	}
 	else{
-		redisUtil.get(ipAddress).then(function(object){
+		redisUtil.get("banned").then(function(bannedHosts){
 
-			if ( object ){
-				deferred.resolve(true);
+			if ( bannedHosts && bannedHosts.length > 0 ){
+				for ( var i = 0; i < bannedHosts.length; i++ ){
+					var bannedHost = bannedHosts[i];
+					if ( bannedHost.host == ipAddress ){
+						deferred.resolve(true);
+						return;
+					}
+				}
 			}
-			else{
-				deferred.resolve(false);
-			}
+
+			deferred.resolve(false);
 		});
 	}
 	
